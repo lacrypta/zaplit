@@ -9,7 +9,7 @@ export default function Home() {
       <div className="w-full max-w-md space-y-8 text-center">
         <div className="space-y-4">
           <div className="relative w-48 h-48 mx-auto">
-            <Image src={logo} alt="ZapSplit Logo" fill className="object-contain" priority />
+            <Image src={logo} alt="Zaplit Logo" fill className="object-contain" priority />
           </div>
           <p className="text-xl text-white">Split bills using zaps</p>
         </div>

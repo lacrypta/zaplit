@@ -7,7 +7,7 @@ import { TeamProvider } from '../contexts/team-context';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'ZapSplit',
+  title: 'Zaplit',
   description: 'Split bills using zaps',
   generator: 'v0.dev',
 };

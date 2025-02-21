@@ -9,7 +9,7 @@ export default function HomeClient() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-black">
-      <h1 className="text-4xl font-bold text-white">Welcome to ZapSplit</h1>
+      <h1 className="text-4xl font-bold text-white">Welcome to Zaplit</h1>
     </main>
   );
 }
