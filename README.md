@@ -3,7 +3,7 @@
 Splitwise clone via lightning and nostr.
 Created for a Bitcoin++ hackathon.
 
-[https://excalidraw.com/#json=OG4WlqTDH85UqVXm_gY_f,4FYX8PnZ6JDIUBqmcShEQg](Excalidraw Flow)
+[Excalidraw Flow](https://excalidraw.com/#json=OG4WlqTDH85UqVXm_gY_f,4FYX8PnZ6JDIUBqmcShEQg)
 
 ## Getting Started
 
