@@ -35,7 +35,7 @@ export function TabNavBar() {
           >
             <div className="flex flex-col items-center">
               <Users className="h-6 w-6" />
-              <span className="mt-1 text-xs">Team</span>
+              <span className="mt-1 text-xs">Group</span>
             </div>
           </Button>
         </li>
