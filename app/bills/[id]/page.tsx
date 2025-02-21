@@ -7,16 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Check, AlertTriangle, Loader2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { TabNavBar } from '@/components/TabNavBar';
-
-type MemberStatus = 'pending' | 'paid' | 'failed';
-
-type Member = {
-  id: string;
-  name: string;
-  avatarUrl: string;
-  amount: number;
-  status: MemberStatus;
-};
+import { MemberStatus, Member } from '@/types/member';
 
 export default function BillDetails({ params }: { params: { id: string } }) {
   const router = useRouter();
