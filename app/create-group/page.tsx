@@ -1,5 +1,4 @@
 'use client';
-
 import type React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -24,8 +23,8 @@ export default function CreateTeam() {
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-black">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-white">Create Team</h1>
-          <p className="mt-2 text-gray-400">Enter a name for your new team</p>
+          <h1 className="text-3xl font-bold text-white">Create Group</h1>
+          <p className="mt-2 text-gray-400">Enter a name for your new group</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           <Input
@@ -33,11 +32,11 @@ export default function CreateTeam() {
             placeholder="Team Name"
             value={teamName}
             onChange={(e) => setTeamName(e.target.value)}
-            className="w-full py-6 text-lg"
+            className="w-full py-6 text-lg text-white bg-transparent border-white/20 placeholder:text-gray-400"
             required
           />
           <Button type="submit" className="w-full py-6 text-lg" size="lg">
-            Create Team
+            Create Group
           </Button>
         </form>
       </div>

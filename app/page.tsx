@@ -14,7 +14,7 @@ export default function Home() {
           <p className="text-xl text-white">Split bills using zaps</p>
         </div>
         <div className="w-full flex flex-col gap-8">
-          <Link href="/create-team" passHref className="w-full">
+          <Link href="/create-group" passHref className="w-full">
             <Button 
               className="w-full text-lg py-6" 
               variant="outline"  
@@ -23,7 +23,7 @@ export default function Home() {
               Create Group
             </Button>
           </Link>
-          <Link href="/join-team" passHref className="w-full">
+          <Link href="/join-group" passHref className="w-full">
             <Button 
               className="w-full text-lg py-6" 
               size="lg"
