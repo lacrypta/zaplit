@@ -3,15 +3,22 @@
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { QrReader } from 'react-qr-reader';
+import { useTeam } from '@/contexts/team-context';
 
 export default function JoinTeam() {
   const router = useRouter();
+  const { joinTeam, isLoading, error } = useTeam();
 
-  const handleScan = (result: any, error: any) => {
+  const handleScan = async (result: any, error: any) => {
     if (result) {
       const teamId = result?.text;
       if (teamId) {
-        router.push(`/team/${teamId}`);
+        try {
+          await joinTeam(teamId);
+          router.push(`/team/${teamId}`);
+        } catch (err) {
+          console.error('Failed to join team:', err);
+        }
       }
     }
   };
@@ -24,8 +31,9 @@ export default function JoinTeam() {
         className="w-full h-full absolute inset-0"
       />
       <div className="flex flex-col items-center justify-center fixed bottom-0 mb-5 w-full px-8">
-        <Button onClick={() => router.back()} className="mt-4 w-full" variant="outline">
-          Cancel Scanning
+        {error && <p className="text-red-500 bg-white p-2 rounded mb-2 w-full text-center">{error}</p>}
+        <Button onClick={() => router.back()} className="mt-4 w-full" variant="outline" disabled={isLoading}>
+          {isLoading ? 'Joining...' : 'Cancel Scanning'}
         </Button>
       </div>
     </div>
