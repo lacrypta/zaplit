@@ -9,6 +9,7 @@ const nextConfig = {
       },
     ],
   },
+  transpilePackages: ['react-qr-reader'],
 };
 
 export default nextConfig;
