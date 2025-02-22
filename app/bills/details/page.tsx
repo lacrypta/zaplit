@@ -19,7 +19,6 @@ type Member = {
 
 export default function BillDetails() {
   const router = useRouter();
-  const [billNumber] = useState('B-12345');
   const [dateTime] = useState('2025-02-21 14:30');
   const [members, setMembers] = useState<Member[]>([
     { id: '1', name: 'You', avatarUrl: '/placeholder.svg?height=40&width=40', amount: 1000, status: 'pending' },

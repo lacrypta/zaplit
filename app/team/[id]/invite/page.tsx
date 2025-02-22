@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Copy, Check } from 'lucide-react';
@@ -9,7 +9,6 @@ import Link from 'next/link';
 
 export default function InvitePage() {
   const params = useParams();
-  const router = useRouter();
   const [teamName, setTeamName] = useState('Loading...');
   const [inviteLink, setInviteLink] = useState('');
   const [copied, setCopied] = useState(false);
@@ -74,8 +73,8 @@ export default function InvitePage() {
             <p className="font-medium">How to invite members:</p>
             <ol className="list-decimal pl-4 space-y-2">
               <li>Share the QR code or invite link with your friends</li>
-              <li>They'll need to scan the QR or click the link</li>
-              <li>Once they join, they'll appear in your team members list</li>
+              <li>They will need to scan the QR or click the link</li>
+              <li>Once they join, they will appear in your team members list</li>
             </ol>
           </div>
         </div>
