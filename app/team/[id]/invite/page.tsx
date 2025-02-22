@@ -20,7 +20,7 @@ export default function InvitePage() {
 
     // Creamos el link de invitación
     const baseUrl = window.location.origin;
-    const link = `${baseUrl}/join-team?id=${params.id}`;
+    const link = `${baseUrl}/join-group?id=${params.id}`;
     setInviteLink(link);
   }, [params.id]);
 
