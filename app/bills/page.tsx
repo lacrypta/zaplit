@@ -13,7 +13,7 @@ export default function BillsPage() {
   // Cargamos los bills cuando el componente se monta
   useEffect(() => {
     const storedBills = getStoredBills();
-    setBills(storedBills);
+    // setBills(storedBills);
   }, []);
 
   // Función para formatear la fecha de manera relativa
