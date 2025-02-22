@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { ArrowLeft, QrCode, Info, Check } from 'lucide-react';
 import { useNWC } from '@/contexts/nwc-context';
 
-// Definimos una interfaz para nuestros settings para mejor tipado
+
 interface UserSettings {
   name: string;
   nwcString: string;
@@ -20,7 +20,7 @@ export default function SettingsPage() {
   const router = useRouter();
   const { isNWCConfigured, configureNWC, disconnectNWC } = useNWC();
 
-  // Estados locales para el formulario
+
   const [name, setName] = useState('');
   const [nwcString, setNwcString] = useState('');
   const [isScanning, setIsScanning] = useState(false);
@@ -28,7 +28,7 @@ export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isValid, setIsValid] = useState(false);
 
-  // Cargamos los settings guardados
+
   useEffect(() => {
     const savedSettings = localStorage.getItem('userSettings');
     if (savedSettings) {

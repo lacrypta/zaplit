@@ -81,6 +81,12 @@ export default function TeamDetails({ params }: { params: { id: string } }) {
     }
   }, [isNWCConfigured]);
 
+  // Función para manejar la invitación de usuarios
+  const inviteUser = () => {
+    router.push(`/team/${params.id}/invite`);
+  };
+
+  // Función para ir a configuración
   const goToSettings = () => {
     router.push('/settings');
   };
@@ -137,10 +143,9 @@ export default function TeamDetails({ params }: { params: { id: string } }) {
           )}
 
           <Button
-            onClick={goToSettings}
+            onClick={inviteUser}
             className="w-full py-6 text-lg"
             size="lg"
-            disabled={!isNWCConfigured || members.length === mockMembers.potentialMembers.length + 1}
           >
             Invite User
           </Button>
