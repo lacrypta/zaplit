@@ -3,6 +3,7 @@ import './globals.css';
 import { Inter } from 'next/font/google';
 import { AppInitializer } from '@/components/AppInitializer';
 import { TeamProvider } from '../contexts/team-context';
+import { NWCProvider } from '../contexts/nwc-context';  // Importamos el nuevo provider
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,8 +18,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={inter.className}>
         <TeamProvider>
-          <AppInitializer />
-          {children}
+          <NWCProvider>  {/* Añadimos el NWCProvider dentro del TeamProvider */}
+            <AppInitializer />
+            {children}
+          </NWCProvider>
         </TeamProvider>
       </body>
     </html>
