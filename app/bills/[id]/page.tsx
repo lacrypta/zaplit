@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -7,36 +6,58 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Check, AlertTriangle, Loader2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { TabNavBar } from '@/components/TabNavBar';
-import { MemberStatus, Member } from '@/types/member';
+import { Bill, getStoredBills } from '@/lib/mockData';
 
-export default function BillDetails({ params }: { params: { id: string } }) {
+// Ampliamos el tipo MemberStatus para incluir el estado de pago
+type PaymentStatus = 'pending' | 'paid' | 'failed';
+
+interface BillDetailsProps {
+  params: {
+    id: string;
+  };
+}
+
+export default function BillDetails({ params }: BillDetailsProps) {
   const router = useRouter();
-  const [dateTime] = useState('2025-02-21 14:30');
-  const [members, setMembers] = useState<Member[]>([
-    { id: '1', name: 'You', avatarUrl: '/placeholder.svg?height=40&width=40', amount: 1000, status: 'pending' },
-    { id: '2', name: 'Alice', avatarUrl: '/placeholder.svg?height=40&width=40', amount: 1000, status: 'pending' },
-    { id: '3', name: 'Bob', avatarUrl: '/placeholder.svg?height=40&width=40', amount: 1000, status: 'pending' },
-    { id: '4', name: 'Charlie', avatarUrl: '/placeholder.svg?height=40&width=40', amount: 1000, status: 'pending' },
-  ]);
+  const [bill, setBill] = useState<Bill | null>(null);
+  const [memberStatuses, setMemberStatuses] = useState<Record<string, PaymentStatus>>({});
 
+  // Cargamos los datos del bill específico
   useEffect(() => {
-    const updateMemberStatus = (index: number, status: MemberStatus) => {
-      setMembers((prevMembers) => prevMembers.map((member, i) => (i === index ? { ...member, status } : member)));
+    const bills = getStoredBills();
+    const currentBill = bills.find(b => b.id === params.id);
+    if (currentBill) {
+      setBill(currentBill);
+      // Inicializamos los estados de pago
+      const initialStatuses: Record<string, PaymentStatus> = {};
+      currentBill.members.forEach(member => {
+        initialStatuses[member.id] = member.hasPaid ? 'paid' : 'pending';
+      });
+      setMemberStatuses(initialStatuses);
+    }
+  }, [params.id]);
+
+  // Simulamos el proceso de pago
+  useEffect(() => {
+    if (!bill) return;
+
+    const processPayments = async () => {
+      // Procesamos el pago para cada miembro secuencialmente
+      for (const member of bill.members) {
+        if (member.hasPaid) continue; // Saltamos miembros que ya pagaron
+
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        setMemberStatuses(prev => ({
+          ...prev,
+          [member.id]: Math.random() > 0.2 ? 'paid' : 'failed' // 80% de éxito
+        }));
+      }
     };
 
-    const timers = [
-      setTimeout(() => updateMemberStatus(0, 'paid'), 1000),
-      setTimeout(() => updateMemberStatus(1, 'paid'), 2500),
-      setTimeout(() => updateMemberStatus(2, 'paid'), 3500),
-      setTimeout(() => updateMemberStatus(3, 'failed'), 4500),
-    ];
+    processPayments();
+  }, [bill]);
 
-    return () => {
-      timers.forEach(clearTimeout);
-    };
-  }, []);
-
-  const getStatusIcon = (status: MemberStatus) => {
+  const getStatusIcon = (status: PaymentStatus) => {
     switch (status) {
       case 'pending':
         return <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />;
@@ -47,20 +68,27 @@ export default function BillDetails({ params }: { params: { id: string } }) {
     }
   };
 
-  const completedPayments = members.filter((member) => member.status !== 'pending').length;
-  const progress = (completedPayments / members.length) * 100;
-  const totalAmount = members.reduce((sum, member) => sum + member.amount, 0);
+  if (!bill) {
+    return <div>Loading...</div>;
+  }
+
+  const completedPayments = Object.values(memberStatuses).filter(status => status === 'paid').length;
+  const progress = (completedPayments / bill.members.length) * 100;
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-500 to-purple-600">
       <main className="flex-grow overflow-y-auto pb-16">
         <div className="p-6">
-          <h1 className="text-3xl font-bold text-white mb-6">Bill Details</h1>
+          <h1 className="text-2xl font-bold text-white mb-6">Bill Details</h1>
 
           <div className="bg-white rounded-lg p-4 mb-6">
             <div className="text-center">
-              <p className="text-4xl font-bold text-primary">{totalAmount} sats</p>
-              <p className="text-gray-600 mt-2">{dateTime}</p>
+              <p className="text-4xl font-bold text-primary">
+                {bill.amount} {bill.currency}
+              </p>
+              <p className="text-gray-600 mt-2">
+                {bill.date} {bill.time}
+              </p>
             </div>
           </div>
 
@@ -68,37 +96,39 @@ export default function BillDetails({ params }: { params: { id: string } }) {
             <h2 className="text-xl font-semibold mb-2">Collecting shares</h2>
             <Progress value={progress} className="mb-2" />
             <p className="text-sm text-gray-600">
-              {completedPayments} of {members.length} shares collected
+              {completedPayments} of {bill.members.length} shares collected
             </p>
           </div>
 
           <div className="bg-white rounded-lg p-4 mb-6">
             <h2 className="text-xl font-semibold mb-4">Members</h2>
             <ul className="space-y-4">
-              {members.map((member) => (
+              {bill.members.map((member) => (
                 <li key={member.id} className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <Avatar>
-                      <AvatarImage src={member.avatarUrl} alt={member.name} />
                       <AvatarFallback>{member.name[0]}</AvatarFallback>
                     </Avatar>
                     <span>{member.name}</span>
                   </div>
                   <div className="flex items-center space-x-4">
-                    <span>{member.amount} sats</span>
-                    {getStatusIcon(member.status)}
+                    <span>{member.share} {bill.currency}</span>
+                    {getStatusIcon(memberStatuses[member.id] || 'pending')}
                   </div>
                 </li>
               ))}
             </ul>
           </div>
 
-          <Button onClick={() => router.push('/bills')} className="w-full py-6 text-lg" size="lg">
+          <Button 
+            onClick={() => router.push('/bills')} 
+            className="w-full py-6 text-lg" 
+            size="lg"
+          >
             Close
           </Button>
         </div>
       </main>
-
       <TabNavBar />
     </div>
   );
