@@ -19,16 +19,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={inter.className}>
-        <TeamProvider>
-          <NWCProvider>
-            <NDKProvider>
+        <NDKProvider>
+          <TeamProvider>
+            <NWCProvider>
               <BillProvider>
                 <AppInitializer />
                 {children}
               </BillProvider>
-            </NDKProvider>
-          </NWCProvider>
-        </TeamProvider>
+            </NWCProvider>
+          </TeamProvider>
+        </NDKProvider>
       </body>
     </html>
   );
