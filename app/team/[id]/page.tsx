@@ -20,7 +20,7 @@ type Member = {
   hasNWC?: boolean;
 };
 
-export default function TeamDetails() {
+export default function TeamDetails({ params }: { params: { id: string } }) {
   const { isNWCConfigured } = useNWC();
   const [members, setMembers] = useState<Member[]>([
     {
@@ -32,11 +32,17 @@ export default function TeamDetails() {
       hasNWC: false,
     },
   ]);
-  const { currentTeam } = useTeam();
+  const { currentTeam, findTeam } = useTeam();
   const teamName = useMemo(() => currentTeam?.name ?? 'Loading...', [currentTeam]);
-  const teamId = useMemo(() => currentTeam?.eventId ?? 'Loading...', [currentTeam]);
+  const teamId = useMemo(() => currentTeam?.id ?? 'Loading...', [currentTeam]);
 
   const router = useRouter();
+
+  useEffect(() => {
+    if (!currentTeam) {
+      findTeam(params.id);
+    }
+  }, [params.id, currentTeam]);
 
   // Efecto para manejar el estado de NWC y la simulación
   useEffect(() => {

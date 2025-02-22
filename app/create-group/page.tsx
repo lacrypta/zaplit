@@ -31,7 +31,7 @@ export default function CreateTeam() {
 
   useEffect(() => {
     if (currentTeam) {
-      router.push(`/team/${currentTeam.id}?name=${encodeURIComponent(currentTeam.name)}`);
+      router.push(`/team/${currentTeam.id}`);
     }
   }, [currentTeam]);
 

@@ -2,7 +2,7 @@
 
 import { Member } from '@/types/member';
 import { Team } from '@/types/team';
-import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
 import { useNDK } from '@/contexts/NDKContext';
 import { generateShortId } from '@/lib/utils';
 
@@ -15,6 +15,7 @@ interface TeamContextType {
   error: string | null;
   members: Member[];
   createTeam: (name: string) => Promise<void>;
+  findTeam: (teamId: string) => Promise<void>;
 }
 
 const TeamContext = createContext<TeamContextType | undefined>(undefined);
@@ -24,7 +25,12 @@ export function TeamProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
-  const { publishEvent } = useNDK();
+  const { publishEvent, fetchEvents, pubkey, subscribe } = useNDK();
+
+  useEffect(() => {
+    if (!currentTeam) return;
+    //TODO: Subscribe to get users
+  }, [currentTeam]);
 
   const joinTeam = async (teamId: string) => {
     try {
@@ -47,7 +53,7 @@ export function TeamProvider({ children }: { children: ReactNode }) {
 
   const createTeam = useCallback(
     async (name: string) => {
-      const teamId = generateShortId(name);
+      const teamId = generateShortId(name + pubkey);
       const content = JSON.stringify({ name, teamId });
       const event = {
         kind: 30003,
@@ -61,7 +67,22 @@ export function TeamProvider({ children }: { children: ReactNode }) {
       const publishedEvent = await publishEvent(event);
       setCurrentTeam({ id: teamId, name, members: [], eventId: publishedEvent.id });
     },
-    [publishEvent],
+    [publishEvent, pubkey],
+  );
+
+  const findTeam = useCallback(
+    async (teamId: string) => {
+      const filter = {
+        kinds: [30003],
+        '#d': [`zaplit:team:${teamId}`],
+      };
+      const events = await fetchEvents(filter);
+      if (events.size === 0) return;
+      const teamEvent = events.values().next().value!;
+      const team = JSON.parse(teamEvent.content);
+      setCurrentTeam({ id: teamId, name: team.name, members: [], eventId: teamEvent.id });
+    },
+    [fetchEvents],
   );
 
   return (
@@ -75,6 +96,7 @@ export function TeamProvider({ children }: { children: ReactNode }) {
         error,
         members,
         createTeam,
+        findTeam,
       }}
     >
       {children}
