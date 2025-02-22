@@ -4,7 +4,8 @@ import { Inter } from 'next/font/google';
 import { AppInitializer } from '@/components/AppInitializer';
 import { TeamProvider } from '../contexts/team-context';
 import { NDKProvider } from '../contexts/NDKContext';
-import { NWCProvider } from '../contexts/nwc-context';  // Importamos el nuevo provider
+import { NWCProvider } from '../contexts/nwc-context'; // Importamos el nuevo provider
+import { BillProvider } from '../contexts/bill-context';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,8 +22,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <TeamProvider>
           <NWCProvider>
             <NDKProvider>
-              <AppInitializer />
+              <BillProvider>
+                <AppInitializer />
                 {children}
+              </BillProvider>
             </NDKProvider>
           </NWCProvider>
         </TeamProvider>
