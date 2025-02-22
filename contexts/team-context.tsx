@@ -36,6 +36,16 @@ export function TeamProvider({ children }: { children: ReactNode }) {
     try {
       setIsLoading(true);
       setError(null);
+      const event = {
+        kind: 31013,
+        content: JSON.stringify({ teamId, pubkey }),
+        tags: [
+          ['a', `zaplit:team:${teamId}`],
+          ['d', `zaplit:user:${teamId}`],
+          ['L', 'zaplit:user'],
+          ['l', teamId, 'zaplit:user'],
+        ],
+      };
 
       // TODO: Join team
       // setCurrentTeam(team);

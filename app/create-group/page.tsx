@@ -23,10 +23,10 @@ export default function CreateTeam() {
   useEffect(() => {
     let privkey = localStorage.getItem(PRIVKEY_LOCAL_STORAGE_KEY);
     if (!privkey) {
-      privkey = NDKPrivateKeySigner.generate().toString();
+      privkey = NDKPrivateKeySigner.generate().privateKey!;
       localStorage.setItem(PRIVKEY_LOCAL_STORAGE_KEY, privkey);
     }
-    setSigner(NDKPrivateKeySigner.generate());
+    setSigner(new NDKPrivateKeySigner(privkey));
   }, [setSigner]);
 
   useEffect(() => {
