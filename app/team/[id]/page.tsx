@@ -54,28 +54,31 @@ export default function TeamDetails({ params }: { params: { id: string } }) {
 
       // Iniciamos la simulación de nuevos miembros
       let currentIndex = 0;
-      const joinInterval = setInterval(() => {
-        if (currentIndex < mockMembers.potentialMembers.length) {
-          const memberToAdd = mockMembers.potentialMembers[currentIndex];
+      let joinInterval: NodeJS.Timeout;
+      setTimeout(() => {
+        joinInterval = setInterval(() => {
+          if (currentIndex < mockMembers.potentialMembers.length) {
+            const memberToAdd = mockMembers.potentialMembers[currentIndex];
 
-          // Añadimos el miembro como pendiente
-          setMembers((prevMembers) => {
-            if (prevMembers.some((m) => m.id === memberToAdd.id)) return prevMembers;
-            return [...prevMembers, { ...memberToAdd, status: 'pending' }];
-          });
+            // Añadimos el miembro como pendiente
+            setMembers((prevMembers) => {
+              if (prevMembers.some((m) => m.id === memberToAdd.id)) return prevMembers;
+              return [...prevMembers, { ...memberToAdd, status: 'pending' }];
+            });
 
-          // Después de un segundo lo marcamos como unido
-          setTimeout(() => {
-            setMembers((prevMembers) =>
-              prevMembers.map((member) => (member.id === memberToAdd.id ? { ...member, status: 'joined' } : member)),
-            );
-          }, 4600);
+            // Después de un segundo lo marcamos como unido
+            setTimeout(() => {
+              setMembers((prevMembers) =>
+                prevMembers.map((member) => (member.id === memberToAdd.id ? { ...member, status: 'joined' } : member)),
+              );
+            }, 4600);
 
-          currentIndex++;
-        } else {
-          clearInterval(joinInterval);
-        }
-      }, 800);
+            currentIndex++;
+          } else {
+            clearInterval(joinInterval);
+          }
+        }, 800);
+      }, 2000);
 
       return () => clearInterval(joinInterval);
     }
