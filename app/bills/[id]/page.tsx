@@ -25,12 +25,12 @@ export default function BillDetails({ params }: BillDetailsProps) {
   // Cargamos los datos del bill específico
   useEffect(() => {
     const bills = getStoredBills();
-    const currentBill = bills.find(b => b.id === params.id);
+    const currentBill = bills.find((b) => b.id === params.id);
     if (currentBill) {
       setBill(currentBill);
       // Inicializamos los estados de pago
       const initialStatuses: Record<string, PaymentStatus> = {};
-      currentBill.members.forEach(member => {
+      currentBill.members.forEach((member) => {
         initialStatuses[member.id] = member.hasPaid ? 'paid' : 'pending';
       });
       setMemberStatuses(initialStatuses);
@@ -46,10 +46,10 @@ export default function BillDetails({ params }: BillDetailsProps) {
       for (const member of bill.members) {
         if (member.hasPaid) continue; // Saltamos miembros que ya pagaron
 
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setMemberStatuses(prev => ({
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        setMemberStatuses((prev) => ({
           ...prev,
-          [member.id]: Math.random() > 0.2 ? 'paid' : 'failed' // 80% de éxito
+          [member.id]: Math.random() > 0.2 ? 'paid' : 'failed', // 80% de éxito
         }));
       }
     };
@@ -72,7 +72,7 @@ export default function BillDetails({ params }: BillDetailsProps) {
     return <div>Loading...</div>;
   }
 
-  const completedPayments = Object.values(memberStatuses).filter(status => status === 'paid').length;
+  const completedPayments = Object.values(memberStatuses).filter((status) => status === 'paid').length;
   const progress = (completedPayments / bill.members.length) * 100;
 
   return (
@@ -112,7 +112,9 @@ export default function BillDetails({ params }: BillDetailsProps) {
                     <span>{member.name}</span>
                   </div>
                   <div className="flex items-center space-x-4">
-                    <span>{member.share} {bill.currency}</span>
+                    <span>
+                      {member.share} {bill.currency}
+                    </span>
                     {getStatusIcon(memberStatuses[member.id] || 'pending')}
                   </div>
                 </li>
@@ -120,11 +122,7 @@ export default function BillDetails({ params }: BillDetailsProps) {
             </ul>
           </div>
 
-          <Button 
-            onClick={() => router.push('/bills')} 
-            className="w-full py-6 text-lg" 
-            size="lg"
-          >
+          <Button onClick={() => router.push('/bills')} className="w-full py-6 text-lg" size="lg">
             Close
           </Button>
         </div>

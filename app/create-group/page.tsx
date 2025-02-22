@@ -1,9 +1,14 @@
 'use client';
 import type React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useNDK } from '@/contexts/NDKContext';
+import { NDKPrivateKeySigner } from '@nostr-dev-kit/ndk';
+import { useTeam } from '@/contexts/team-context';
+
+const PRIVKEY_LOCAL_STORAGE_KEY = 'zaplit-privkey';
 
 const generateRandomId = () => {
   return Math.random().toString(36).substr(2, 9);
@@ -12,11 +17,27 @@ const generateRandomId = () => {
 export default function CreateTeam() {
   const [teamName, setTeamName] = useState('');
   const router = useRouter();
+  const { setSigner } = useNDK();
+  const { createTeam, currentTeam } = useTeam();
+
+  useEffect(() => {
+    let privkey = localStorage.getItem(PRIVKEY_LOCAL_STORAGE_KEY);
+    if (!privkey) {
+      privkey = NDKPrivateKeySigner.generate().toString();
+      localStorage.setItem(PRIVKEY_LOCAL_STORAGE_KEY, privkey);
+    }
+    setSigner(NDKPrivateKeySigner.generate());
+  }, [setSigner]);
+
+  useEffect(() => {
+    if (currentTeam) {
+      router.push(`/team/${currentTeam.id}?name=${encodeURIComponent(currentTeam.name)}`);
+    }
+  }, [currentTeam]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const teamId = generateRandomId();
-    router.push(`/team/${teamId}?name=${encodeURIComponent(teamName)}`);
+    createTeam(teamName);
   };
 
   return (

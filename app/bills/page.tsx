@@ -25,12 +25,14 @@ export default function BillsPage() {
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Yesterday';
     if (diffDays < 7) return `${diffDays} days ago`;
-    
+
     // Para fechas más antiguas, mostramos el formato "24th May"
-    return date.toLocaleDateString('en-US', { 
-      day: 'numeric',
-      month: 'short'
-    }).replace(',', '');
+    return date
+      .toLocaleDateString('en-US', {
+        day: 'numeric',
+        month: 'short',
+      })
+      .replace(',', '');
   };
 
   const addNewBill = () => {
@@ -46,20 +48,14 @@ export default function BillsPage() {
       <main className="flex-grow overflow-y-auto pb-16">
         <div className="p-6">
           <h1 className="text-3xl font-bold text-white mb-6">Bills</h1>
-          
-          <Button 
-            onClick={addNewBill} 
-            className="w-full py-6 text-lg mb-6 flex items-center justify-center" 
-            size="lg"
-          >
+
+          <Button onClick={addNewBill} className="w-full py-6 text-lg mb-6 flex items-center justify-center" size="lg">
             <Plus className="mr-2 h-5 w-5" /> Add New Bill
           </Button>
 
           {bills.length === 0 ? (
             // Mostramos un mensaje cuando no hay bills
-            <div className="text-center text-gray-400 py-8">
-              No bills yet. Create your first bill!
-            </div>
+            <div className="text-center text-gray-400 py-8">No bills yet. Create your first bill!</div>
           ) : (
             // Lista de bills existentes
             <div className="space-y-4">

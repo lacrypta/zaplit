@@ -3,8 +3,11 @@ import './globals.css';
 import { Inter } from 'next/font/google';
 import { AppInitializer } from '@/components/AppInitializer';
 import { TeamProvider } from '../contexts/team-context';
+<<<<<<< HEAD
 import { NDKProvider } from '../contexts/NDKContext';
-import { NWCProvider } from '../contexts/nwc-context'; // Importamos el nuevo provider
+=======
+import { NWCProvider } from '../contexts/nwc-context';  // Importamos el nuevo provider
+>>>>>>> dabd1d4 (flow for nwc mock)
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,14 +21,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NDKProvider>
-          <TeamProvider>
-            <NWCProvider>
-              <AppInitializer />
-              {children}
-            </NWCProvider>
-          </TeamProvider>
-        </NDKProvider>
+        <TeamProvider>
+<<<<<<< HEAD
+          <NDKProvider>
+            <AppInitializer />
+            {children}
+          </NDKProvider>
+=======
+          <NWCProvider>  {/* Añadimos el NWCProvider dentro del TeamProvider */}
+            <AppInitializer />
+            {children}
+          </NWCProvider>
+>>>>>>> dabd1d4 (flow for nwc mock)
+        </TeamProvider>
       </body>
     </html>
   );

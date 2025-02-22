@@ -6,23 +6,25 @@ import type { NostrEvent, NDKFilter } from '@nostr-dev-kit/ndk';
 
 interface NDKContextType {
   fetchEvents: (filter: NDKFilter) => Promise<Set<NDKEvent>>;
-  publishEvent: (event: NostrEvent) => Promise<void>;
-  setSignerPrivateKey: (privateKey: string) => void;
+  publishEvent: (event: Pick<NostrEvent, 'content' | 'kind' | 'tags'>) => Promise<NDKEvent>;
+  setSigner: (privateKey: NDKPrivateKeySigner) => void;
 }
 
 const NDKContext = createContext<NDKContextType | null>(null);
 
 export const NDKProvider = ({ children }: { children: ReactNode }) => {
   const [ndk, setNdk] = useState<NDK | null>(null);
+  const [pubkey, setPubkey] = useState<string>('');
 
-  const _initNDK = async (privateKey?: string) => {
+  const _initNDK = async (signer?: NDKPrivateKeySigner) => {
     const ndkInstance = ndk
       ? ndk
       : new NDK({
-          explicitRelayUrls: ['wss://relay.damus.io', 'wss://nos.lol', 'wss://relay.nostr.band'],
+          explicitRelayUrls: ['wss://relay.damus.io', 'wss://nos.lol', 'wss://relay.nostr.band', 'wss://relay.hodl.ar'],
         });
-    if (privateKey) {
-      ndkInstance.signer = new NDKPrivateKeySigner(privateKey);
+    if (signer) {
+      ndkInstance.signer = signer;
+      setPubkey((await ndkInstance.signer.user()).pubkey);
     }
 
     await ndkInstance.connect();
@@ -34,9 +36,12 @@ export const NDKProvider = ({ children }: { children: ReactNode }) => {
     initNDK();
   }, []);
 
-  const setSignerPrivateKey = useCallback((privateKey: string) => {
-    initNDK(privateKey);
-  }, [initNDK]);
+  const setSigner = useCallback(
+    (signer: NDKPrivateKeySigner) => {
+      initNDK(signer);
+    },
+    [initNDK],
+  );
 
   const _fetchEvents = async (filter: NDKFilter): Promise<Set<NDKEvent>> => {
     console.log('ndk', ndk);
@@ -45,16 +50,22 @@ export const NDKProvider = ({ children }: { children: ReactNode }) => {
   };
   const fetchEvents = useCallback(_fetchEvents, [ndk]);
 
-  const _publishEvent = async (event: NostrEvent): Promise<void> => {
+  const _publishEvent = async (partialEvent: Pick<NostrEvent, 'content' | 'kind' | 'tags'>): Promise<NDKEvent> => {
     if (!ndk) throw new Error('NDK not initialized');
-    if (!ndk.signer) throw new Error('No signer configured');
-    await new NDKEvent(ndk, event).publish();
+    if (!ndk.signer || !pubkey) throw new Error('No signer configured');
+    const event = {
+      ...partialEvent,
+      created_at: Math.floor(Date.now() / 1000),
+      pubkey,
+    };
+    console.log('Publishing event', event);
+    const ndkEvent = new NDKEvent(ndk, event);
+    await ndkEvent.publish();
+    return ndkEvent;
   };
-  const publishEvent = useCallback(_publishEvent, [ndk, ndk?.signer]);
+  const publishEvent = useCallback(_publishEvent, [ndk, ndk?.signer, pubkey]);
 
-  return (
-    <NDKContext.Provider value={{ fetchEvents, publishEvent, setSignerPrivateKey }}>{children}</NDKContext.Provider>
-  );
+  return <NDKContext.Provider value={{ fetchEvents, publishEvent, setSigner }}>{children}</NDKContext.Provider>;
 };
 
 export const useNDK = () => {

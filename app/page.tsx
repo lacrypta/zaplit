@@ -15,19 +15,12 @@ export default function Home() {
         </div>
         <div className="w-full flex flex-col gap-8">
           <Link href="/create-group" passHref className="w-full">
-            <Button 
-              className="w-full text-lg py-6" 
-              variant="outline"  
-              size="lg"
-            >
+            <Button className="w-full text-lg py-6" variant="outline" size="lg">
               Create Group
             </Button>
           </Link>
           <Link href="/join-group" passHref className="w-full">
-            <Button 
-              className="w-full text-lg py-6" 
-              size="lg"
-            >
+            <Button className="w-full text-lg py-6" size="lg">
               Join Group
             </Button>
           </Link>
