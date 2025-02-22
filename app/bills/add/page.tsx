@@ -52,10 +52,7 @@ export default function AddBill() {
       }
 
       // Obtenemos los miembros activos del grupo
-      const activeMembers = [
-        mockMembers.owner,
-        ...mockMembers.potentialMembers.filter((member) => member.status === 'joined'),
-      ];
+      const activeMembers = [mockMembers.owner, ...mockMembers.potentialMembers];
 
       // Creamos el nuevo bill
       const newBill = createNewBill(numericAmount, currency, activeMembers);
