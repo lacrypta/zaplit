@@ -101,16 +101,18 @@ export function BillProvider({ children }: { children: ReactNode }) {
         nostrWalletConnectUrl: bill.paidBy.nwcCredentials,
       });
 
-      bill.shares.forEach(async (share) => {
-        // If receiver, skip
-        if (share.member.id === bill.paidBy.id) {
-          console.info('Receiver, skipping');
-          return;
-        }
+      await Promise.all(
+        bill.shares.map(async (share) => {
+          if (share.member.id === bill.paidBy.id) {
+            console.info('Receiver, skipping');
+            return;
+          }
+          return collectShare(share, nwcClientReceiver);
+        }),
+      );
 
-        await collectShare(share, nwcClientReceiver);
-      });
-      //   setBills((prev) => prev.map((bill) => (bill.id === billId ? settledBill : bill)));
+      // Close NWC client
+      nwcClientReceiver.close();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to settle bill');
       throw err;
