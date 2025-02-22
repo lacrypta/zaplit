@@ -1,18 +1,17 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { TabNavBar } from '@/components/TabNavBar';
-import { Bill, getStoredBills } from '@/lib/mockData';
 
 export default function BillsPage() {
   const router = useRouter();
-  const [bills, setBills] = useState<Bill[]>([]);
+  const bills: {id: string, date: string, title: string, description: string, time: string, yourShare: number, amount: number, currency: string}[] = [];
 
   // Cargamos los bills cuando el componente se monta
   useEffect(() => {
-    const storedBills = getStoredBills();
+    //const storedBills = getStoredBills();
     // setBills(storedBills);
   }, []);
 

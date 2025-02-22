@@ -10,9 +10,11 @@ import { useTeam } from '@/contexts/team-context';
 
 const PRIVKEY_LOCAL_STORAGE_KEY = 'zaplit-privkey';
 
+/*
 const generateRandomId = () => {
   return Math.random().toString(36).substr(2, 9);
 };
+*/
 
 export default function CreateTeam() {
   const [teamName, setTeamName] = useState('');

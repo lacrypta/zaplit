@@ -17,7 +17,7 @@ interface UserSettings {
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { isNWCConfigured, configureNWC, disconnectNWC } = useNWC();
+  const { configureNWC } = useNWC();
 
   const [name, setName] = useState('');
   const [nwcString, setNwcString] = useState('');

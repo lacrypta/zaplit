@@ -7,9 +7,10 @@ import { useTeam } from '@/contexts/team-context';
 
 export default function JoinTeam() {
   const router = useRouter();
-  const { joinTeam, isLoading, error } = useTeam();
+  const { isLoading, error } = useTeam();
 
-  const handleScan = async (result: any, error: any) => {
+  /*
+  const handleScan = async (result: any, error: Error) => {
     if (result) {
       const teamId = result?.text;
       if (teamId) {
@@ -17,17 +18,18 @@ export default function JoinTeam() {
           await joinTeam(teamId);
           router.push(`/team/${teamId}`);
         } catch (err) {
+          console.log(error) 
           console.error('Failed to join team:', err);
         }
       }
     }
   };
+  */
 
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center p-8 bg-gradient-to-b from-blue-500 to-purple-600">
       <QrReader
         constraints={{ facingMode: 'environment' }}
-        onResult={handleScan}
         className="w-full h-full absolute inset-0"
       />
       <div className="flex flex-col items-center justify-center fixed bottom-0 mb-5 w-full px-8">
