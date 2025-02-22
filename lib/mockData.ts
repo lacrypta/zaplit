@@ -38,38 +38,34 @@ export const mockMembers: { owner: Member; potentialMembers: Member[] } = {
     name: 'You',
     avatarUrl: '/placeholder.svg?height=40&width=40',
     status: 'joined' as MemberStatus,
-    isOwner: true
+    isOwner: true,
   },
   potentialMembers: [
     {
       id: '2',
       name: 'Friend1',
       avatarUrl: '/placeholder.svg?height=40&width=40',
-      status: 'joined' as MemberStatus
+      status: 'joined' as MemberStatus,
     },
     {
       id: '3',
       name: 'Friend2',
       avatarUrl: '/placeholder.svg?height=40&width=40',
-      status: 'pending' as MemberStatus
+      status: 'pending' as MemberStatus,
     },
     {
       id: '4',
       name: 'Friend3',
       avatarUrl: '/placeholder.svg?height=40&width=40',
-      status: 'joined' as MemberStatus
-    }
-  ]
+      status: 'joined' as MemberStatus,
+    },
+  ],
 };
 
 // Función helper para crear nuevos bills
-export const createNewBill = (
-  amount: number,
-  currency: 'SAT' | 'USD' | 'BRL',
-  teamMembers: Member[]
-): Bill => {
+export const createNewBill = (amount: number, currency: 'SAT' | 'USD' | 'BRL', teamMembers: Member[]): Bill => {
   const share = Math.floor(amount / teamMembers.length);
-  
+
   return {
     id: Math.random().toString(36).substr(2, 9),
     amount,
@@ -79,13 +75,13 @@ export const createNewBill = (
     totalAmount: amount,
     yourShare: share,
     status: 'pending',
-    members: teamMembers.map(member => ({
+    members: teamMembers.map((member) => ({
       id: member.id,
       name: member.name,
       share,
       hasPaid: false,
-      isProcessing: false
-    }))
+      isProcessing: false,
+    })),
   };
 };
 
@@ -104,8 +100,8 @@ export const mockBills: Bill[] = [
       { id: '1', name: 'You', share: 1000, hasPaid: true },
       { id: '2', name: 'Friend1', share: 1000, hasPaid: false },
       { id: '3', name: 'Friend2', share: 1000, hasPaid: false },
-      { id: '4', name: 'Friend3', share: 1000, hasPaid: false }
-    ]
+      { id: '4', name: 'Friend3', share: 1000, hasPaid: false },
+    ],
   },
   {
     id: '2',
@@ -120,9 +116,9 @@ export const mockBills: Bill[] = [
       { id: '1', name: 'You', share: 1500, hasPaid: true },
       { id: '2', name: 'Friend1', share: 1500, hasPaid: true },
       { id: '3', name: 'Friend2', share: 1500, hasPaid: false },
-      { id: '4', name: 'Friend3', share: 1500, hasPaid: false }
-    ]
-  }
+      { id: '4', name: 'Friend3', share: 1500, hasPaid: false },
+    ],
+  },
 ];
 
 // Funciones de persistencia con manejo de tipos

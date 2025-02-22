@@ -47,7 +47,7 @@ export function NWCProvider({ children }: { children: ReactNode }) {
         isNWCConfigured,
         nwcPublicKey,
         configureNWC,
-        disconnectNWC
+        disconnectNWC,
       }}
     >
       {children}

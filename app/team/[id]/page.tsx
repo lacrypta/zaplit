@@ -1,12 +1,13 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Check, AlertTriangle, Settings } from 'lucide-react';
 import { TabNavBar } from '@/components/TabNavBar';
 import { mockMembers } from '@/lib/mockData';
 import { useNWC } from '@/contexts/nwc-context';
+import { useTeam } from '@/contexts/team-context';
 
 type MemberStatus = 'joined' | 'pending' | 'invited' | 'not_configured';
 
@@ -19,55 +20,48 @@ type Member = {
   hasNWC?: boolean;
 };
 
-export default function TeamDetails({ params }: { params: { id: string } }) {
+export default function TeamDetails() {
   const { isNWCConfigured } = useNWC();
-  const [teamName, setTeamName] = useState('Loading...');
-  const [members, setMembers] = useState<Member[]>([{
-    id: mockMembers.owner.id,
-    name: mockMembers.owner.name,
-    avatarUrl: mockMembers.owner.avatarUrl,
-    status: 'not_configured',
-    isOwner: true,
-    hasNWC: false
-  }]);
+  const [members, setMembers] = useState<Member[]>([
+    {
+      id: mockMembers.owner.id,
+      name: mockMembers.owner.name,
+      avatarUrl: mockMembers.owner.avatarUrl,
+      status: 'not_configured',
+      isOwner: true,
+      hasNWC: false,
+    },
+  ]);
+  const { currentTeam } = useTeam();
+  const teamName = useMemo(() => currentTeam?.name ?? 'Loading...', [currentTeam]);
+  const teamId = useMemo(() => currentTeam?.eventId ?? 'Loading...', [currentTeam]);
 
-  const searchParams = useSearchParams();
   const router = useRouter();
-
-  // Efecto para el nombre del equipo
-  useEffect(() => {
-    const name = searchParams.get('name');
-    setTeamName(name ? name : `Team ${params.id}`);
-  }, [searchParams, params.id]);
 
   // Efecto para manejar el estado de NWC y la simulación
   useEffect(() => {
     if (isNWCConfigured) {
       // Actualizamos el estado del owner
-      setMembers(prev => prev.map(member => 
-        member.isOwner ? { ...member, status: 'joined', hasNWC: true } : member
-      ));
+      setMembers((prev) =>
+        prev.map((member) => (member.isOwner ? { ...member, status: 'joined', hasNWC: true } : member)),
+      );
 
       // Iniciamos la simulación de nuevos miembros
       let currentIndex = 0;
       const joinInterval = setInterval(() => {
         if (currentIndex < mockMembers.potentialMembers.length) {
           const memberToAdd = mockMembers.potentialMembers[currentIndex];
-          
+
           // Añadimos el miembro como pendiente
-          setMembers(prevMembers => {
-            if (prevMembers.some(m => m.id === memberToAdd.id)) return prevMembers;
+          setMembers((prevMembers) => {
+            if (prevMembers.some((m) => m.id === memberToAdd.id)) return prevMembers;
             return [...prevMembers, { ...memberToAdd, status: 'pending' }];
           });
 
           // Después de un segundo lo marcamos como unido
           setTimeout(() => {
-            setMembers(prevMembers => 
-              prevMembers.map(member => 
-                member.id === memberToAdd.id 
-                  ? { ...member, status: 'joined' }
-                  : member
-              )
+            setMembers((prevMembers) =>
+              prevMembers.map((member) => (member.id === memberToAdd.id ? { ...member, status: 'joined' } : member)),
             );
           }, 1000);
 
@@ -83,7 +77,7 @@ export default function TeamDetails({ params }: { params: { id: string } }) {
 
   // Función para manejar la invitación de usuarios
   const inviteUser = () => {
-    router.push(`/team/${params.id}/invite`);
+    router.push(`/team/${teamId}/invite`);
   };
 
   // Función para ir a configuración
@@ -108,9 +102,7 @@ export default function TeamDetails({ params }: { params: { id: string } }) {
                     </Avatar>
                     <div className="flex flex-col">
                       <span>{member.name}</span>
-                      {member.isOwner && (
-                        <span className="text-xs text-gray-400">Owner</span>
-                      )}
+                      {member.isOwner && <span className="text-xs text-gray-400">Owner</span>}
                     </div>
                   </div>
                   {member.status === 'joined' ? (
@@ -130,11 +122,7 @@ export default function TeamDetails({ params }: { params: { id: string } }) {
                   <AlertTriangle className="h-5 w-5 text-yellow-500" />
                   <p className="text-yellow-500">Configure NWC to start using the app</p>
                 </div>
-                <Button
-                  onClick={goToSettings}
-                  variant="outline"
-                  className="flex items-center space-x-2"
-                >
+                <Button onClick={goToSettings} variant="outline" className="flex items-center space-x-2">
                   <Settings className="h-4 w-4" />
                   <span>Update Settings</span>
                 </Button>
@@ -142,11 +130,7 @@ export default function TeamDetails({ params }: { params: { id: string } }) {
             </div>
           )}
 
-          <Button
-            onClick={inviteUser}
-            className="w-full py-6 text-lg"
-            size="lg"
-          >
+          <Button onClick={inviteUser} className="w-full py-6 text-lg" size="lg">
             Invite User
           </Button>
         </div>

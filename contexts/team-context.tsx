@@ -2,7 +2,9 @@
 
 import { Member } from '@/types/member';
 import { Team } from '@/types/team';
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import { useNDK } from '@/contexts/NDKContext';
+import { generateShortId } from '@/lib/utils';
 
 interface TeamContextType {
   currentTeam: Team | null;
@@ -12,6 +14,7 @@ interface TeamContextType {
   isLoading: boolean;
   error: string | null;
   members: Member[];
+  createTeam: (name: string) => Promise<void>;
 }
 
 const TeamContext = createContext<TeamContextType | undefined>(undefined);
@@ -21,6 +24,7 @@ export function TeamProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
+  const { publishEvent } = useNDK();
 
   const joinTeam = async (teamId: string) => {
     try {
@@ -41,6 +45,25 @@ export function TeamProvider({ children }: { children: ReactNode }) {
     setCurrentTeam(null);
   };
 
+  const createTeam = useCallback(
+    async (name: string) => {
+      const teamId = generateShortId(name);
+      const content = JSON.stringify({ name, teamId });
+      const event = {
+        kind: 30003,
+        content,
+        tags: [
+          ['d', `zaplit:team:${teamId}`],
+          ['L', 'zaplit:team'],
+          ['l', teamId, 'zaplit:team'],
+        ],
+      };
+      const publishedEvent = await publishEvent(event);
+      setCurrentTeam({ id: teamId, name, members: [], eventId: publishedEvent.id });
+    },
+    [publishEvent],
+  );
+
   return (
     <TeamContext.Provider
       value={{
@@ -51,6 +74,7 @@ export function TeamProvider({ children }: { children: ReactNode }) {
         isLoading,
         error,
         members,
+        createTeam,
       }}
     >
       {children}
