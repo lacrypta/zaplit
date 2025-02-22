@@ -2,12 +2,14 @@
 
 import { createContext, useContext, ReactNode, useEffect, useState, useCallback } from 'react';
 import NDK, { NDKEvent, NDKPrivateKeySigner } from '@nostr-dev-kit/ndk';
-import type { NostrEvent, NDKFilter } from '@nostr-dev-kit/ndk';
+import type { NostrEvent, NDKFilter, NDKSubscription } from '@nostr-dev-kit/ndk';
 
 interface NDKContextType {
   fetchEvents: (filter: NDKFilter) => Promise<Set<NDKEvent>>;
   publishEvent: (event: Pick<NostrEvent, 'content' | 'kind' | 'tags'>) => Promise<NDKEvent>;
   setSigner: (privateKey: NDKPrivateKeySigner) => void;
+  pubkey: string;
+  subscribe: (filter: NDKFilter, opts?: { closeOnEose?: boolean; groupable?: boolean }) => Promise<NDKSubscription>;
 }
 
 const NDKContext = createContext<NDKContextType | null>(null);
@@ -65,7 +67,28 @@ export const NDKProvider = ({ children }: { children: ReactNode }) => {
   };
   const publishEvent = useCallback(_publishEvent, [ndk, ndk?.signer, pubkey]);
 
-  return <NDKContext.Provider value={{ fetchEvents, publishEvent, setSigner }}>{children}</NDKContext.Provider>;
+  const _subscribe = async (
+    filter: NDKFilter,
+    opts: { closeOnEose?: boolean; groupable?: boolean } = {},
+  ): Promise<NDKSubscription> => {
+    if (!ndk) throw new Error('NDK not initialized');
+    return ndk.subscribe(filter, opts);
+  };
+  const subscribe = useCallback(_subscribe, [ndk]);
+
+  return (
+    <NDKContext.Provider
+      value={{
+        fetchEvents,
+        publishEvent,
+        setSigner,
+        pubkey,
+        subscribe,
+      }}
+    >
+      {children}
+    </NDKContext.Provider>
+  );
 };
 
 export const useNDK = () => {
