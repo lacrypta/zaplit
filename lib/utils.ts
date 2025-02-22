@@ -17,16 +17,17 @@ export async function collectShare(share: Share, nwcClientReceiver: nwc.NWCClien
   // Set share status to paying
   share.status = 'paying';
 
-  // create NWC client for sender
-  const nwcClientPayer = new nwc.NWCClient({
-    nostrWalletConnectUrl: share.member.nwcCredentials,
-  });
-
-  // Get payment request from receiver
-  const paymentRequest = await nwcClientReceiver.makeInvoice({ amount: share.amount });
-
-  // Send payment
+  // Make payment
   try {
+    // create NWC client for sender
+    const nwcClientPayer = new nwc.NWCClient({
+      nostrWalletConnectUrl: share.member.nwcCredentials,
+    });
+
+    // Get payment request from receiver
+    const paymentRequest = await nwcClientReceiver.makeInvoice({ amount: share.amount });
+
+    // Pay invoice
     await nwcClientPayer.payInvoice(paymentRequest);
     share.status = 'paid';
   } catch (err) {
