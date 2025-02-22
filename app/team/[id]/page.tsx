@@ -69,13 +69,13 @@ export default function TeamDetails({ params }: { params: { id: string } }) {
             setMembers((prevMembers) =>
               prevMembers.map((member) => (member.id === memberToAdd.id ? { ...member, status: 'joined' } : member)),
             );
-          }, 1000);
+          }, 4600);
 
           currentIndex++;
         } else {
           clearInterval(joinInterval);
         }
-      }, 3000);
+      }, 800);
 
       return () => clearInterval(joinInterval);
     }
