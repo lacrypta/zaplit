@@ -16,11 +16,12 @@ export async function collectShare(share: Share, nwcClientReceiver: nwc.NWCClien
 
   // Set share status to paying
   share.status = 'paying';
+  let nwcClientPayer: nwc.NWCClient | null = null;
 
   // Make payment
   try {
     // create NWC client for sender
-    const nwcClientPayer = new nwc.NWCClient({
+    nwcClientPayer = new nwc.NWCClient({
       nostrWalletConnectUrl: share.member.nwcCredentials,
     });
 
@@ -33,5 +34,10 @@ export async function collectShare(share: Share, nwcClientReceiver: nwc.NWCClien
   } catch (err) {
     console.error('Failed to pay invoice', err);
     share.status = 'failed';
+  } finally {
+    // Close NWC client when finished
+    if (nwcClientPayer !== null) {
+      nwcClientPayer.close();
+    }
   }
 }
