@@ -32,6 +32,7 @@ Payment status and calculations are handled client-side.
 ```
 
 #### Team Event
+
 ```json
 {
   "kind": 3003,
@@ -45,6 +46,7 @@ Payment status and calculations are handled client-side.
 ```
 
 #### User Event (Joining a Team)
+
 ```json
 {
   "kind": 31013,
@@ -59,6 +61,7 @@ Payment status and calculations are handled client-side.
 ```
 
 #### Bill Event
+
 ```json
 {
   "kind": 3003,
@@ -72,6 +75,7 @@ Payment status and calculations are handled client-side.
 ```
 
 #### Payment Event
+
 ```json
 {
   "kind": 3113,
@@ -88,6 +92,7 @@ Payment status and calculations are handled client-side.
 ### Team Creation and Joining Flow
 
 1. Team Creator:
+
    - Generates a random team secret
    - Creates Team Event (kind: 31001)
    - Generates shareable URL containing: team event id and teamSecret
@@ -103,21 +108,22 @@ Payment status and calculations are handled client-side.
 ### Bill Creation Flow
 
 1. Any team member can create a bill:
+
    - Creates Bill Event with encrypted details
    - Other members are notified via Nostr subscription
 
 2. Payment Flow:
    - System calculates each member's share of the bill
    - Multiple members can pay their portions independently:
-     * Each member sees their required share
-     * Members use their connected NWC wallet to pay
-     * A separate Payment Event is created for each payment
-     * Each payment references the original bill via the "e" tag
+     - Each member sees their required share
+     - Members use their connected NWC wallet to pay
+     - A separate Payment Event is created for each payment
+     - Each payment references the original bill via the "e" tag
    - Client-side calculation of bill status:
-     * Tracks total amount paid vs bill amount
-     * Shows who has paid and who hasn't
-     * Displays remaining balance
-     * Updates payment status in real-time
+     - Tracks total amount paid vs bill amount
+     - Shows who has paid and who hasn't
+     - Displays remaining balance
+     - Updates payment status in real-time
    - Members can track payment progress through the UI
 
 ## Data Format
@@ -125,32 +131,36 @@ Payment status and calculations are handled client-side.
 All event contents are encrypted stringified JSON objects, allowing for extensibility. Here are the base JSON structures before encryption:
 
 ### Team Data
+
 ```json
 {
   "name": "Team Name",
-  "teamId": "<teamId>",
+  "teamId": "<teamId>"
 }
 ```
 
 ### Bill Data
+
 ```json
 {
   "title": "Lunch at Bitcoin Conference",
   "amount": 50000000, // Amount in millisats
   "currency": "USD",
-  "fiatAmount": 50.00,
+  "fiatAmount": 50.0
 }
 ```
 
 ### Payment Data
+
 ```json
 {
   "amount": 10000000, // Amount in millisats
-  "share_index": 1, // Which share of the bill this payment covers (optional)
+  "share_index": 1 // Which share of the bill this payment covers (optional)
 }
 ```
 
 The client application maintains the bill's payment status by:
+
 1. Fetching all payment events that reference the bill
 2. Summing the total amount paid
 3. Calculating remaining balances
