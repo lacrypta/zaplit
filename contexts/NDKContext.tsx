@@ -15,29 +15,28 @@ const NDKContext = createContext<NDKContextType | null>(null);
 export const NDKProvider = ({ children }: { children: ReactNode }) => {
   const [ndk, setNdk] = useState<NDK | null>(null);
 
-  const initNDK = async (privateKey?: string) => {
-    let signer;
+  const _initNDK = async (privateKey?: string) => {
+    const ndkInstance = ndk
+      ? ndk
+      : new NDK({
+          explicitRelayUrls: ['wss://relay.damus.io', 'wss://nos.lol', 'wss://relay.nostr.band'],
+        });
     if (privateKey) {
-      signer = new NDKPrivateKeySigner(privateKey);
+      ndkInstance.signer = new NDKPrivateKeySigner(privateKey);
     }
 
-    const ndkInstance = new NDK({
-      explicitRelayUrls: ['wss://relay.damus.io', 'wss://nos.lol', 'wss://relay.nostr.band'],
-      signer,
-    });
-
     await ndkInstance.connect();
-    console.log('ndkInstance', ndkInstance);
     setNdk(ndkInstance);
   };
+  const initNDK = useCallback(_initNDK, [ndk]);
 
   useEffect(() => {
     initNDK();
   }, []);
 
-  const setSignerPrivateKey = (privateKey: string) => {
+  const setSignerPrivateKey = useCallback((privateKey: string) => {
     initNDK(privateKey);
-  };
+  }, [initNDK]);
 
   const _fetchEvents = async (filter: NDKFilter): Promise<Set<NDKEvent>> => {
     console.log('ndk', ndk);
