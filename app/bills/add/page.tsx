@@ -54,7 +54,7 @@ export default function AddBill() {
       // Obtenemos los miembros activos del grupo
       const activeMembers = [
         mockMembers.owner,
-        ...mockMembers.potentialMembers.filter(member => member.status === 'joined')
+        ...mockMembers.potentialMembers.filter((member) => member.status === 'joined'),
       ];
 
       // Creamos el nuevo bill
@@ -63,7 +63,7 @@ export default function AddBill() {
       // Obtenemos los bills existentes y añadimos el nuevo
       const currentBills = getStoredBills();
       const updatedBills = [newBill, ...currentBills];
-      
+
       // Guardamos los bills actualizados
       storeBills(updatedBills);
 
@@ -81,7 +81,7 @@ export default function AddBill() {
     try {
       setIsProcessing(true);
       // Simulamos un escaneo que tarda 2 segundos
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       // Establecemos un monto de ejemplo
       setAmount('1000');
       setCurrency('SAT');
@@ -97,13 +97,13 @@ export default function AddBill() {
       <main className="flex-grow overflow-y-auto pb-16">
         <div className="p-6">
           <h1 className="text-3xl font-bold mb-6">Add New Bill</h1>
-          
+
           {/* Display del monto */}
           <div className="bg-gray-900 rounded-lg p-4 mb-6">
             <div className="text-center mb-4">
               <span className="text-4xl font-bold">{amount}</span>
             </div>
-            
+
             {/* Selector de moneda */}
             <div className="flex rounded-md shadow-sm" role="group">
               {(['SAT', 'USD', 'BRL'] as Currency[]).map((curr) => (
@@ -136,22 +136,22 @@ export default function AddBill() {
                 {num}
               </Button>
             ))}
-            <Button 
-              onClick={handleDecimalClick} 
+            <Button
+              onClick={handleDecimalClick}
               className="text-2xl py-6 bg-gray-800 hover:bg-gray-700"
               disabled={isProcessing}
             >
               .
             </Button>
-            <Button 
-              onClick={() => handleNumberClick('0')} 
+            <Button
+              onClick={() => handleNumberClick('0')}
               className="text-2xl py-6 bg-gray-800 hover:bg-gray-700"
               disabled={isProcessing}
             >
               0
             </Button>
-            <Button 
-              onClick={handleDeleteClick} 
+            <Button
+              onClick={handleDeleteClick}
               className="text-2xl py-6 bg-gray-800 hover:bg-gray-700"
               disabled={isProcessing}
             >
@@ -160,27 +160,22 @@ export default function AddBill() {
           </div>
 
           {/* Botones de acción */}
-          <Button 
-            onClick={handleScanInvoice} 
-            className="w-full mb-4 py-6 text-lg" 
+          <Button
+            onClick={handleScanInvoice}
+            className="w-full mb-4 py-6 text-lg"
             variant="secondary"
             disabled={isProcessing}
           >
-            <QrCode className="mr-2 h-5 w-5" /> 
+            <QrCode className="mr-2 h-5 w-5" />
             {isProcessing ? 'Scanning...' : 'Scan Invoice'}
           </Button>
 
           <div className="flex space-x-4">
-            <Button 
-              onClick={handleCancel} 
-              className="flex-1 py-6 text-lg" 
-              variant="outline"
-              disabled={isProcessing}
-            >
+            <Button onClick={handleCancel} className="flex-1 py-6 text-lg" variant="outline" disabled={isProcessing}>
               Cancel
             </Button>
-            <Button 
-              onClick={handleCreateBill} 
+            <Button
+              onClick={handleCreateBill}
               className="flex-1 py-6 text-lg"
               disabled={isProcessing || amount === '0'}
             >

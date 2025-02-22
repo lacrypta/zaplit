@@ -9,7 +9,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { ArrowLeft, QrCode, Info, Check } from 'lucide-react';
 import { useNWC } from '@/contexts/nwc-context';
 
-
 interface UserSettings {
   name: string;
   nwcString: string;
@@ -20,14 +19,12 @@ export default function SettingsPage() {
   const router = useRouter();
   const { isNWCConfigured, configureNWC, disconnectNWC } = useNWC();
 
-
   const [name, setName] = useState('');
   const [nwcString, setNwcString] = useState('');
   const [isScanning, setIsScanning] = useState(false);
   const [enableNWCProxy, setEnableNWCProxy] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isValid, setIsValid] = useState(false);
-
 
   useEffect(() => {
     const savedSettings = localStorage.getItem('userSettings');
@@ -36,7 +33,7 @@ export default function SettingsPage() {
       setName(settings.name || '');
       setNwcString(settings.nwcString || '');
       setEnableNWCProxy(settings.enableNWCProxy || false);
-      
+
       // Si hay una nwcString guardada, la validamos
       if (settings.nwcString) {
         validateNWCString(settings.nwcString);
@@ -64,7 +61,7 @@ export default function SettingsPage() {
     try {
       // Aquí iría la implementación real del escaneo QR
       // Por ahora simulamos un delay y un resultado
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       const scannedValue = 'nostr+walletconnect://example-valid-string';
       setNwcString(scannedValue);
       validateNWCString(scannedValue);
@@ -110,7 +107,7 @@ export default function SettingsPage() {
             <ArrowLeft className="mr-2 h-4 w-4" /> Back
           </Button>
           <h1 className="text-3xl font-bold text-white mb-6">Settings</h1>
-          
+
           <div className="bg-gray-900 rounded-lg p-6 space-y-6 text-white">
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
@@ -134,28 +131,17 @@ export default function SettingsPage() {
                   value={nwcString}
                   onChange={handleNWCStringChange}
                   placeholder="Enter NWC string"
-                  className={`bg-gray-800 border-gray-700 ${
-                    nwcString && !isValid ? 'border-red-500' : ''
-                  }`}
+                  className={`bg-gray-800 border-gray-700 ${nwcString && !isValid ? 'border-red-500' : ''}`}
                 />
                 <Button onClick={handleScanQR} disabled={isScanning}>
                   {isScanning ? 'Scanning...' : <QrCode className="h-4 w-4" />}
                 </Button>
               </div>
-              {nwcString && !isValid && (
-                <p className="text-sm text-red-500 mt-1">
-                  Invalid NWC string format
-                </p>
-              )}
+              {nwcString && !isValid && <p className="text-sm text-red-500 mt-1">Invalid NWC string format</p>}
             </div>
 
             <div className="flex items-center space-x-2">
-              <Switch 
-                id="nwc-proxy" 
-                checked={enableNWCProxy} 
-                onCheckedChange={setEnableNWCProxy} 
-                disabled={true} 
-              />
+              <Switch id="nwc-proxy" checked={enableNWCProxy} onCheckedChange={setEnableNWCProxy} disabled={true} />
               <Label htmlFor="nwc-proxy" className="flex items-center">
                 Enable NWC Proxy
                 <TooltipProvider>
@@ -171,11 +157,7 @@ export default function SettingsPage() {
               </Label>
             </div>
 
-            <Button 
-              onClick={handleSave} 
-              className="w-full"
-              disabled={Boolean(isSaving || (nwcString && !isValid))}
-            >
+            <Button onClick={handleSave} className="w-full" disabled={Boolean(isSaving || (nwcString && !isValid))}>
               {isSaving ? 'Saving...' : 'Save Settings'}
             </Button>
           </div>
