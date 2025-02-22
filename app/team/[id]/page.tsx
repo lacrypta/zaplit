@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Check, AlertTriangle, Settings } from 'lucide-react';
 import { TabNavBar } from '@/components/TabNavBar';
 import { mockMembers } from '@/lib/mockData';
+import { useNWC } from '@/contexts/nwc-context';
 
 type MemberStatus = 'joined' | 'pending' | 'invited' | 'not_configured';
 
@@ -19,8 +20,8 @@ type Member = {
 };
 
 export default function TeamDetails({ params }: { params: { id: string } }) {
+  const { isNWCConfigured } = useNWC();
   const [teamName, setTeamName] = useState('Loading...');
-  // Inicializamos el owner con NWC no configurado
   const [members, setMembers] = useState<Member[]>([{
     id: mockMembers.owner.id,
     name: mockMembers.owner.name,
@@ -29,22 +30,20 @@ export default function TeamDetails({ params }: { params: { id: string } }) {
     isOwner: true,
     hasNWC: false
   }]);
-  
-  // Estado para controlar si NWC está configurado
-  const [isNWCConfigured, setIsNWCConfigured] = useState(false);
 
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  // Efecto para el nombre del equipo
   useEffect(() => {
     const name = searchParams.get('name');
     setTeamName(name ? name : `Team ${params.id}`);
   }, [searchParams, params.id]);
 
-  // Efecto para manejar la simulación después de configurar NWC
+  // Efecto para manejar el estado de NWC y la simulación
   useEffect(() => {
     if (isNWCConfigured) {
-      // Actualizamos primero el estado del owner
+      // Actualizamos el estado del owner
       setMembers(prev => prev.map(member => 
         member.isOwner ? { ...member, status: 'joined', hasNWC: true } : member
       ));
@@ -54,11 +53,14 @@ export default function TeamDetails({ params }: { params: { id: string } }) {
       const joinInterval = setInterval(() => {
         if (currentIndex < mockMembers.potentialMembers.length) {
           const memberToAdd = mockMembers.potentialMembers[currentIndex];
+          
+          // Añadimos el miembro como pendiente
           setMembers(prevMembers => {
             if (prevMembers.some(m => m.id === memberToAdd.id)) return prevMembers;
             return [...prevMembers, { ...memberToAdd, status: 'pending' }];
           });
 
+          // Después de un segundo lo marcamos como unido
           setTimeout(() => {
             setMembers(prevMembers => 
               prevMembers.map(member => 
@@ -115,7 +117,6 @@ export default function TeamDetails({ params }: { params: { id: string } }) {
             </ul>
           </div>
 
-          {/* Banner de advertencia para configurar NWC */}
           {!isNWCConfigured && (
             <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 mb-6">
               <div className="flex items-center justify-between">
@@ -136,7 +137,7 @@ export default function TeamDetails({ params }: { params: { id: string } }) {
           )}
 
           <Button
-            onClick={() => setIsNWCConfigured(true)} // Temporal para simular
+            onClick={goToSettings}
             className="w-full py-6 text-lg"
             size="lg"
             disabled={!isNWCConfigured || members.length === mockMembers.potentialMembers.length + 1}

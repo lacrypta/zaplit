@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import { AppInitializer } from '@/components/AppInitializer';
 import { TeamProvider } from '../contexts/team-context';
 import { NDKProvider } from '../contexts/NDKContext';
+import { NWCProvider } from '../contexts/nwc-context';  // Importamos el nuevo provider
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,10 +19,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={inter.className}>
         <TeamProvider>
-          <NDKProvider>
-            <AppInitializer />
-            {children}
-          </NDKProvider>
+          <NWCProvider>
+            <NDKProvider>
+              <AppInitializer />
+                {children}
+            </NDKProvider>
+          </NWCProvider>
         </TeamProvider>
       </body>
     </html>
